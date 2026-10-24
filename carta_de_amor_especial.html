@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Mi Niña ❤️ Una Sorpresa Especial</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400&family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #fff5f6 0%, #ffdbe1 50%, #ffc2d1 100%);
+            color: #4a3e3d;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        .font-serif-title {
+            font-family: 'Cormorant Garamond', serif;
+        }
+        .font-cursive {
+            font-family: 'Great Vibes', cursive;
+        }
+        /* Floating Hearts Animation */
+        .heart-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+            animation: floatUp 8s linear infinite;
+            opacity: 0;
+        }
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) scale(0.3) rotate(0deg);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.8;
+            }
+            80% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-10vh) scale(1.2) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        /* Glassmorphism Effect */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 182, 193, 0.5);
+            box-shadow: 0 10px 30px rgba(225, 78, 102, 0.1);
+        }
+        /* Pulse Effect */
+        .pulse-heart {
+            animation: pulse 1.8s infinite ease-in-out;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #fff0f3;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f472b6;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="relative min-h-screen pb-28">
+
+    <!-- Floating Hearts Container -->
+    <div id="hearts-container" class="fixed inset-0 pointer-events-none z-0"></div>
+
+    <!-- Music Player Controls Floating Banner -->
+    <div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-md glass-card rounded-full p-2.5 px-6 shadow-2xl flex items-center justify-between border border-pink-200">
+        <div class="flex items-center space-x-3">
+            <button id="play-btn" onclick="toggleAudio()" class="w-11 h-11 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white flex items-center justify-center shadow-md hover:scale-105 transition transform active:scale-95 focus:outline-none">
+                <i id="play-icon" class="fas fa-play text-base ml-0.5"></i>
+            </button>
+            <div class="text-xs sm:text-sm">
+                <p id="song-title" class="font-bold text-rose-800 flex items-center gap-1.5">
+                    Perfect <i class="fas fa-music text-pink-500 text-xs animate-bounce"></i>
+                </p>
+                <p class="text-gray-500 text-[11px]">Ed Sheeran</p>
+            </div>
+        </div>
+
+        <!-- Timeline / Audio seeker -->
+        <div class="flex-1 mx-4 hidden sm:flex flex-col gap-1">
+            <input type="range" id="audio-seekbar" value="0" min="0" max="100" class="w-full accent-rose-500 h-1.5 bg-rose-100 rounded-lg appearance-none cursor-pointer">
+            <div class="flex justify-between text-[10px] text-gray-400 font-mono">
+                <span id="current-time">0:00</span>
+                <span id="total-duration">--:--</span>
+            </div>
+        </div>
+
+        <button onclick="toggleMute()" class="text-rose-500 hover:text-rose-700 p-2 focus:outline-none">
+            <i id="volume-icon" class="fas fa-volume-up text-lg"></i>
+        </button>
+    </div>
+
+    <!-- Direct Local Audio Element -->
+    <audio id="bgMusic" src="musica.mp3" loop preload="auto"></audio>
+
+    <!-- Welcome Modal for Instant Playback Permission -->
+    <div id="music-modal" class="fixed inset-0 bg-rose-950/40 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-opacity duration-500">
+        <div class="bg-white rounded-3xl p-8 max-w-sm text-center shadow-2xl border-2 border-pink-200 transform scale-100">
+            <div class="w-20 h-20 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4 pulse-heart">
+                <i class="fas fa-heart text-4xl text-rose-500"></i>
+            </div>
+            <h3 class="font-serif-title text-3xl font-bold text-rose-800 mb-2">✨ Una sorpresa para ti ✨</h3>
+            <p class="text-gray-600 text-sm mb-6 leading-relaxed">Para disfrutar de esta experiencia especial con música, haz clic abajo para ingresar.</p>
+            <button onclick="startExperience()" class="w-full py-3.5 px-6 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white font-semibold shadow-lg hover:shadow-rose-300/50 hover:scale-105 active:scale-95 transition">
+                Reproducir Música ❤️
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-4xl mx-auto px-4 pt-10 space-y-16 relative z-10">
+
+        <!-- 1. ENCABEZADO / HERO -->
+        <header class="text-center space-y-4 py-6">
+            <span class="inline-block px-4 py-1.5 rounded-full bg-rose-100 text-rose-600 font-semibold text-xs sm:text-sm tracking-wide shadow-sm border border-rose-200">
+                ✨ Una sorpresa especial para ti ✨
+            </span>
+            <h1 class="font-cursive text-6xl sm:text-8xl text-rose-600 drop-shadow-sm my-2">
+                Para Mi Niña
+            </h1>
+            <div class="max-w-xl mx-auto">
+                <p class="font-serif-title italic text-xl sm:text-3xl text-rose-900/90 leading-relaxed font-semibold">
+                    "Me enamoraste desde el primer día y desde entonces quiero estar para siempre contigo..."
+                </p>
+            </div>
+            <div class="flex justify-center items-center gap-2 text-rose-400 pt-2">
+                <span class="h-px w-16 bg-rose-200"></span>
+                <i class="fas fa-heart text-sm"></i>
+                <span class="h-px w-16 bg-rose-200"></span>
+            </div>
+        </header>
+
+        <!-- 2. CRONÓMETRO DE HISTORIA -->
+        <section class="glass-card rounded-3xl p-6 sm:p-10 text-center border-t-4 border-t-rose-400">
+            <div class="inline-flex items-center gap-2 text-rose-600 font-bold text-xl sm:text-2xl mb-6">
+                <i class="fas fa-clock text-rose-500"></i>
+                <h2 class="font-serif-title font-bold">💖 Construyendo nuestra historia juntos</h2>
+            </div>
+            
+            <p class="text-xs sm:text-sm text-gray-500 mb-6 font-medium">
+                Tiempo transcurrido desde el <span class="text-rose-600 font-bold">24 de Febrero del 2025</span>:
+            </p>
+
+            <!-- Counter Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 max-w-2xl mx-auto">
+                <div class="bg-rose-50/80 rounded-2xl p-4 border border-rose-100 shadow-sm">
+                    <span id="counter-days" class="block font-serif-title text-3xl sm:text-5xl font-bold text-rose-700">0</span>
+                    <span class="text-xs text-rose-500 uppercase font-semibold">Días</span>
+                </div>
+                <div class="bg-rose-50/80 rounded-2xl p-4 border border-rose-100 shadow-sm">
+                    <span id="counter-hours" class="block font-serif-title text-3xl sm:text-5xl font-bold text-rose-700">00</span>
+                    <span class="text-xs text-rose-500 uppercase font-semibold">Horas</span>
+                </div>
+                <div class="bg-rose-50/80 rounded-2xl p-4 border border-rose-100 shadow-sm">
+                    <span id="counter-minutes" class="block font-serif-title text-3xl sm:text-5xl font-bold text-rose-700">00</span>
+                    <span class="text-xs text-rose-500 uppercase font-semibold">Minutos</span>
+                </div>
+                <div class="bg-rose-50/80 rounded-2xl p-4 border border-rose-100 shadow-sm">
+                    <span id="counter-seconds" class="block font-serif-title text-3xl sm:text-5xl font-bold text-rose-700">00</span>
+                    <span class="text-xs text-rose-500 uppercase font-semibold">Segundos</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. CARTA DE AMOR -->
+        <section class="relative">
+            <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-rose-500 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg text-xl z-10">
+                💌
+            </div>
+            <div class="bg-white/90 rounded-3xl p-6 sm:p-12 border border-rose-200/80 shadow-xl relative overflow-hidden">
+                <div class="text-center mb-8 pt-4">
+                    <h2 class="font-serif-title text-3xl sm:text-4xl font-bold text-rose-900">Una Carta para Ti</h2>
+                    <p class="font-cursive text-2xl text-rose-600 mt-1">Desde mi corazón</p>
+                </div>
+
+                <div class="space-y-4 text-gray-700 leading-relaxed text-base sm:text-lg font-serif">
+                    <p class="font-bold text-rose-950 text-xl">Mi amor hermoso,</p>
+                    <p class="indent-4">
+                        Quería hacerte este detalle para recordarte lo infinitamente especial que eres en mi vida. Cada día a tu lado me doy cuenta de lo afortunado(a) soy de tenerte, de ver tu sonrisa y de compartir momentos tan bonitos contigo.
+                    </p>
+                    <p class="indent-4 italic border-l-2 border-rose-400 pl-4 py-2 text-rose-900 bg-rose-50/50 rounded-r-lg">
+                        Tal como dice la canción de Ed Sheeran: "We were just kids when we fell in love...". Contigo todo se siente sincero, cálido y lleno de paz. Tu amor saca la mejor versión de mí y no hay lugar en el mundo donde prefiera estar que no sea a tu lado.
+                    </p>
+                    <p class="indent-4">
+                        Gracias por tus abrazos, por tus risas, por tu paciencia y por ser mi compañera incondicional. Prometo cuidarte, respetarte y hacerte sonreír todos los días de mi vida.
+                    </p>
+                    <div class="pt-6 text-right">
+                        <p class="font-cursive text-3xl text-rose-600">Con todo mi amor por siempre ❤️</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. GALERÍA DE RECUERDOS (LOCAL FILES Direct binding) -->
+        <section class="space-y-6">
+            <div class="text-center">
+                <h2 class="font-serif-title text-3xl sm:text-4xl font-bold text-rose-900">📸 Galería de Recuerdos</h2>
+                <p class="text-rose-500 font-medium text-sm mt-1">Nuestros mejores momentos</p>
+            </div>
+
+            <!-- Photos Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <!-- Foto 1 -->
+                <div class="group glass-card rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition transform hover:-translate-y-1 cursor-pointer" onclick="openLightbox('foto1.jpg')">
+                    <div class="h-64 overflow-hidden relative">
+                        <img src="foto1.jpg" alt="Foto 1" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/600x600/ffdbe1/e14e66?text=foto1.jpg'">
+                        <div class="absolute inset-0 bg-rose-900/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white">
+                            <i class="fas fa-search-plus text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Foto 2 -->
+                <div class="group glass-card rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition transform hover:-translate-y-1 cursor-pointer" onclick="openLightbox('foto2.jpg')">
+                    <div class="h-64 overflow-hidden relative">
+                        <img src="foto2.jpg" alt="Foto 2" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/600x600/ffdbe1/e14e66?text=foto2.jpg'">
+                        <div class="absolute inset-0 bg-rose-900/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white">
+                            <i class="fas fa-search-plus text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Foto 3 -->
+                <div class="group glass-card rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition transform hover:-translate-y-1 cursor-pointer" onclick="openLightbox('foto3.jpg')">
+                    <div class="h-64 overflow-hidden relative">
+                        <img src="foto3.jpg" alt="Foto 3" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/600x600/ffdbe1/e14e66?text=foto3.jpg'">
+                        <div class="absolute inset-0 bg-rose-900/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white">
+                            <i class="fas fa-search-plus text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Foto 4 -->
+                <div class="group glass-card rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition transform hover:-translate-y-1 cursor-pointer" onclick="openLightbox('foto4.jpg')">
+                    <div class="h-64 overflow-hidden relative">
+                        <img src="foto4.jpg" alt="Foto 4" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/600x600/ffdbe1/e14e66?text=foto4.jpg'">
+                        <div class="absolute inset-0 bg-rose-900/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white">
+                            <i class="fas fa-search-plus text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Foto 5 -->
+                <div class="group glass-card rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition transform hover:-translate-y-1 cursor-pointer" onclick="openLightbox('foto5.jpg')">
+                    <div class="h-64 overflow-hidden relative">
+                        <img src="foto5.jpg" alt="Foto 5" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/600x600/ffdbe1/e14e66?text=foto5.jpg'">
+                        <div class="absolute inset-0 bg-rose-900/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white">
+                            <i class="fas fa-search-plus text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Foto 6 -->
+                <div class="group glass-card rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition transform hover:-translate-y-1 cursor-pointer" onclick="openLightbox('foto6.jpg')">
+                    <div class="h-64 overflow-hidden relative">
+                        <img src="foto6.jpg" alt="Foto 6" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/600x600/ffdbe1/e14e66?text=foto6.jpg'">
+                        <div class="absolute inset-0 bg-rose-900/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white">
+                            <i class="fas fa-search-plus text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 5. RAZONES POR LAS QUE TE AMO -->
+        <section class="space-y-6">
+            <div class="text-center">
+                <h2 class="font-serif-title text-3xl sm:text-4xl font-bold text-rose-900">❤️ Razones por las que te Amo</h2>
+                <p class="text-rose-500 font-medium text-sm mt-1">Pequeños detalles</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Razón #1 -->
+                <div class="glass-card rounded-3xl p-6 hover:shadow-xl transition transform hover:-translate-y-1 border-t-4 border-t-rose-400 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center font-bold text-lg mb-4">
+                            #1
+                        </div>
+                        <p class="text-gray-700 font-medium text-base leading-relaxed">
+                            "Tu sonrisa ilumina completamente mi día por más difícil que sea."
+                        </p>
+                    </div>
+                    <div class="mt-6 text-right">
+                        <i class="fas fa-smile-beam text-rose-300 text-2xl"></i>
+                    </div>
+                </div>
+
+                <!-- Razón #2 -->
+                <div class="glass-card rounded-3xl p-6 hover:shadow-xl transition transform hover:-translate-y-1 border-t-4 border-t-rose-400 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center font-bold text-lg mb-4">
+                            #2
+                        </div>
+                        <p class="text-gray-700 font-medium text-base leading-relaxed">
+                            "Tu corazón bondadoso y la forma tan dulce en la que tratas a los demás."
+                        </p>
+                    </div>
+                    <div class="mt-6 text-right">
+                        <i class="fas fa-hand-holding-heart text-rose-300 text-2xl"></i>
+                    </div>
+                </div>
+
+                <!-- Razón #3 -->
+                <div class="glass-card rounded-3xl p-6 hover:shadow-xl transition transform hover:-translate-y-1 border-t-4 border-t-rose-400 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center font-bold text-lg mb-4">
+                            #3
+                        </div>
+                        <p class="text-gray-700 font-medium text-base leading-relaxed">
+                            "Porque contigo puedo ser yo mismo(a) sin miedo a nada."
+                        </p>
+                    </div>
+                    <div class="mt-6 text-right">
+                        <i class="fas fa-sparkles text-rose-300 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. MIS PROMESAS PARA TI -->
+        <section class="glass-card rounded-3xl p-6 sm:p-10 border-b-4 border-b-rose-400">
+            <div class="text-center mb-8">
+                <h2 class="font-serif-title text-3xl sm:text-4xl font-bold text-rose-900">💍 Mis Promesas Para Ti</h2>
+                <p class="text-rose-500 font-medium text-sm mt-1">Compromisos de mi corazón</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/80 border border-rose-100 shadow-sm">
+                    <div class="text-rose-500 text-2xl">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <p class="text-gray-700 text-sm sm:text-base font-medium">
+                        Estar siempre para apoyarte en tus sueños y metas.
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/80 border border-rose-100 shadow-sm">
+                    <div class="text-rose-500 text-2xl">
+                        <i class="fas fa-laugh-beam"></i>
+                    </div>
+                    <p class="text-gray-700 text-sm sm:text-base font-medium">
+                        Sacarte una sonrisa incluso en tus días grises.
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/80 border border-rose-100 shadow-sm">
+                    <div class="text-rose-500 text-2xl">
+                        <i class="fas fa-plane-departure"></i>
+                    </div>
+                    <p class="text-gray-700 text-sm sm:text-base font-medium">
+                        Viajar juntos a todos esos lugares que soñamos visitar.
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/80 border border-rose-100 shadow-sm">
+                    <div class="text-rose-500 text-2xl">
+                        <i class="fas fa-infinity"></i>
+                    </div>
+                    <p class="text-gray-700 text-sm sm:text-base font-medium">
+                        Amarte cada día un poco más que el día anterior.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. CIERRE Y PIE DE PÁGINA -->
+        <footer class="text-center space-y-3 pt-6 pb-12 border-t border-rose-200/50">
+            <p class="font-bold text-rose-700 text-lg sm:text-xl">
+                Hecho con todo mi amor para ti ❤️
+            </p>
+            <p class="font-cursive text-2xl sm:text-3xl text-rose-500">
+                Nuestra historia de amor apenas comienza
+            </p>
+        </footer>
+
+    </main>
+
+    <!-- Lightbox Zoom Modal -->
+    <div id="lightbox" onclick="closeLightbox()" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm cursor-pointer">
+        <div class="relative max-w-4xl max-h-[90vh] text-center">
+            <img id="lightbox-img" src="" alt="Zoom Photo" class="max-w-full max-h-[85vh] rounded-2xl object-contain shadow-2xl mx-auto">
+            <button onclick="closeLightbox()" class="absolute -top-10 right-0 text-white text-3xl hover:text-rose-400 focus:outline-none">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Floating Hearts Animation
+        function createHearts() {
+            const container = document.getElementById('hearts-container');
+            const heartIcons = ['❤️', '💖', '💕', '💗', '✨', '🌸'];
+            const heartCount = 20;
+
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart-particle';
+                heart.innerHTML = heartIcons[Math.floor(Math.random() * heartIcons.length)];
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                heart.style.animationDelay = (Math.random() * 5) + 's';
+                heart.style.fontSize = (Math.random() * 15 + 15) + 'px';
+                container.appendChild(heart);
+            }
+        }
+
+        // Live Realtime Cronómetro
+        // Starts on February 24, 2025
+        const startDate = new Date(2025, 1, 24, 0, 0, 0);
+
+        function updateTimer() {
+            const now = new Date();
+            const diffMs = now - startDate;
+
+            if (diffMs < 0) {
+                document.getElementById('counter-days').innerText = "0";
+                document.getElementById('counter-hours').innerText = "00";
+                document.getElementById('counter-minutes').innerText = "00";
+                document.getElementById('counter-seconds').innerText = "00";
+                return;
+            }
+
+            const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diffMs / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diffMs / (1000 * 60)) % 60);
+            const seconds = Math.floor((diffMs / 1000) % 60);
+
+            document.getElementById('counter-days').innerText = days;
+            document.getElementById('counter-hours').innerText = String(hours).padStart(2, '0');
+            document.getElementById('counter-minutes').innerText = String(minutes).padStart(2, '0');
+            document.getElementById('counter-seconds').innerText = String(seconds).padStart(2, '0');
+        }
+
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+        // Audio Player Controls
+        const audio = document.getElementById('bgMusic');
+        const playIcon = document.getElementById('play-icon');
+        const seekbar = document.getElementById('audio-seekbar');
+        const currentTimeElem = document.getElementById('current-time');
+        const totalDurationElem = document.getElementById('total-duration');
+        let isMuted = false;
+
+        function startExperience() {
+            const modal = document.getElementById('music-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 500);
+
+            audio.play().then(() => {
+                playIcon.className = "fas fa-pause text-base";
+            }).catch(e => {
+                console.log("Audio playback deferred or constrained:", e);
+            });
+        }
+
+        function toggleAudio() {
+            if (audio.paused) {
+                audio.play();
+                playIcon.className = "fas fa-pause text-base";
+            } else {
+                audio.pause();
+                playIcon.className = "fas fa-play text-base ml-0.5";
+            }
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            audio.muted = isMuted;
+            document.getElementById('volume-icon').className = isMuted ? "fas fa-volume-mute text-lg text-gray-400" : "fas fa-volume-up text-lg text-rose-500";
+        }
+
+        function formatTime(secs) {
+            const minutes = Math.floor(secs / 60) || 0;
+            const seconds = Math.floor(secs % 60) || 0;
+            return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        audio.addEventListener('timeupdate', () => {
+            if (audio.duration) {
+                const progress = (audio.currentTime / audio.duration) * 100;
+                seekbar.value = progress;
+                currentTimeElem.innerText = formatTime(audio.currentTime);
+                totalDurationElem.innerText = formatTime(audio.duration);
+            }
+        });
+
+        seekbar.addEventListener('input', () => {
+            if (audio.duration) {
+                audio.currentTime = (seekbar.value / 100) * audio.duration;
+            }
+        });
+
+        // Lightbox Modal
+        function openLightbox(src) {
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lightbox').classList.remove('hidden');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.add('hidden');
+        }
+
+        window.onload = function() {
+            createHearts();
+        };
+    </script>
+</body>
+</html>
